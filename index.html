@@ -5,155 +5,671 @@
 <title>Board Game Picker</title>
 <link href="https://fonts.googleapis.com/css2?family=Orbitron&display=swap" rel="stylesheet" />
 <style>
-html, body {
-  margin: 0; padding: 0; height: 100%; overflow: hidden;
-  font-family: 'Orbitron', sans-serif;
-  color: #fff; background-color: black;
-  background-size: cover; background-position: center; background-repeat: no-repeat;
+:root {
+  --primary: #00f0ff;
+  --secondary: #007c91;
+  --text-light: #b0eaff;
 }
+
+body.theme-blue {
+  --primary: #00f0ff;
+  --secondary: #007c91;
+  --text-light: #b0eaff;
+}
+
+body.theme-red {
+  --primary: #cc3333;
+  --secondary: #661111;
+  --text-light: #ff9999;
+}
+
+body.theme-cyberpunk {
+  --primary: #fffa00;
+  --secondary: #ffaa00;
+  --text-light: #fff48f;
+}
+
+body.theme-matrix {
+  --primary: #008f11;
+  --secondary: #003b00;
+  --text-light: #33ff55;
+}
+
+html, body {
+  margin: 0;
+  padding: 0;
+  height: 100%;
+  overflow: hidden;
+  font-family: 'Orbitron', sans-serif;
+  color: var(--text-light);
+  background-color: black;
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+}
+
+body {
+  transition: background-image 1s ease-in-out;
+}
+
 main {
-  position: relative; z-index: 1; width: 100%; min-height: 100vh;
-  display: flex; flex-direction: column; align-items: center;
-  justify-content: flex-start; padding: 0; box-sizing: border-box;
+  position: relative;
+  z-index: 1;
+  width: 100%;
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: flex-start;
+  padding: 0;
+  box-sizing: border-box;
   backdrop-filter: brightness(0.4);
 }
-h1 {
-  font-size: 2.5em; margin-bottom: 25px; text-shadow: 0 0 10px #00f0ff;
-}
-.control-panel {
-  display: flex; flex-direction: column; align-items: center;
-  background-color: rgba(0,0,0,0.6); border: 2px solid rgba(0,255,255,0.3);
-  box-shadow: 0 0 10px rgba(0,255,255,0.5); border-radius: 10px;
-  padding: 15px 20px; margin-bottom: 15px; width: 100%; max-width: 440px;
-}
-.control-panel input[type="text"] {
-  padding: 10px; font-size: 16px; width: 100%;
-  border: none; border-radius: 5px; background-color: #222; color: #fff;
-  box-shadow: 0 0 8px rgba(0,255,255,0.5); margin-bottom: 12px; box-sizing: border-box;
-}
-.btn-row { display: flex; gap: 10px; width: 100%; justify-content: center; }
-.btn-row button {
-  flex: 1; padding: 10px 16px; font-size: 14px; cursor: pointer;
-  border: none; border-radius: 5px;
-  background: linear-gradient(145deg,#00f0ff,#007c91);
-  color: white; text-shadow: 0 0 5px #000; box-shadow: 0 0 12px #00f0ff;
-  transition: transform 0.2s ease; user-select: none;
-}
-.btn-row button:hover { transform: scale(1.05); }
-.btn-row button:disabled { opacity: 0.5; }
 
-.selection-controls { display:flex; gap:10px; margin-bottom:12px; flex-wrap:wrap; justify-content:center;}
-.selection-controls button {
-  padding:6px 12px; font-size:13px; cursor:pointer; border:none; border-radius:6px;
-  background: linear-gradient(145deg,#00f0ff,#007c91); color:white; text-shadow:0 0 3px #000;
-  box-shadow:0 0 8px #00f0ff; transition: transform 0.2s ease;
+h1 {
+  font-size: 2.5em;
+  margin-bottom: 25px;
+  text-shadow: 0 0 10px var(--primary);
 }
-.selection-controls button:hover { transform: scale(1.1); }
+
+.control-panel {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  background-color: rgba(0, 0, 0, 0.6);
+  border: 2px solid rgba(0, 255, 255, 0.3);
+  box-shadow: 0 0 10px rgba(0, 255, 255, 0.5);
+  border-radius: 10px;
+  padding: 15px 20px;
+  margin-bottom: 15px;
+  width: 100%;
+  max-width: 440px;
+}
+
+.control-panel input[type="text"] {
+  padding: 10px;
+  font-size: 16px;
+  width: 100%;
+  border-radius: 5px;
+  border: 2px solid transparent;
+  background-color: #222;
+  color: color: var(--text-light);
+  box-shadow: 0 0 8px rgba(0, 255, 255, 0.5);
+  margin-bottom: 12px;
+  box-sizing: border-box;
+  transition: border 0.2s ease, box-shadow 0.2s ease;
+}
+
+.control-panel input[type="text"]:focus {
+  outline: none;
+  border: 2px solid var(--primary);
+  box-shadow: 0 0 12px var(--primary);
+}
+
+.btn-row {
+  display: flex;
+  gap: 10px;
+  width: 100%;
+  justify-content: center;
+}
+
+.btn-row button {
+  flex: 1;
+  padding: 10px 16px;
+  font-size: 14px;
+  cursor: pointer;
+  border: none;
+  border-radius: 5px;
+  background: linear-gradient(145deg, var(--primary), var(--secondary));
+  color: white;
+  text-shadow: 0 0 5px #000;
+  box-shadow: 0 0 12px var(--primary);
+  transition: transform 0.2s ease;
+  user-select: none;
+}
+
+.btn-row button:hover {
+  transform: scale(1.05);
+}
+
+.btn-row button:disabled {
+  opacity: 0.5;
+}
+
+.selection-controls {
+  display: flex;
+  gap: 10px;
+  margin-bottom: 12px;
+  flex-wrap: wrap;
+  justify-content: center;
+}
+
+.selection-controls button {
+  padding: 6px 12px;
+  font-size: 13px;
+  cursor: pointer;
+  border: none;
+  border-radius: 6px;
+  background: linear-gradient(145deg, var(--primary), var(--secondary));
+  color: white;
+  text-shadow: 0 0 3px #000;
+  box-shadow: 0 0 8px var(--primary);
+  transition: transform 0.2s ease;
+}
+
+.selection-controls button:hover {
+  transform: scale(1.1);
+}
 
 ul {
-  list-style:none; padding:0; margin-top:10px; max-width:660px; width:100%;
-  display:flex; flex-wrap:wrap; justify-content:center; gap:8px; box-sizing:border-box;
+  list-style: none;
+  padding: 0;
+  margin-top: 10px;
+  max-width: 660px;
+  width: 100%;
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 8px;
+  box-sizing: border-box;
 }
+
 li {
-  background-color: rgba(255,255,255,0.08); padding:8px 16px; border-radius:20px;
-  color:#b0eaff; font-size:14px; display:flex; align-items:center; gap:10px;
-  box-shadow:0 0 5px rgba(0,240,255,0.2); border:2px solid rgba(0,255,255,0.3);
+  background-color: rgba(255, 255, 255, 0.08);
+  padding: 8px 16px;
+  border-radius: 20px;
+  color: var(--text-light);
+  font-size: 14px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  box-shadow: 0 0 5px rgba(0, 240, 255, 0.2);
+  border: 2px solid var(--primary);
   transition: transform 0.2s ease, background-color 0.3s ease, border-color 0.3s ease, box-shadow 0.3s ease;
-  cursor:pointer; position:relative; user-select:none;
+  cursor: pointer;
+  position: relative;
+  user-select: none;
 }
+
 li.selected {
-  background-color: rgba(0,255,255,0.1);
-  box-shadow:0 0 15px #00f0ff,0 0 30px #00f0ff inset;
-  border-color:#00f0ff; color:#fff; font-weight:bold;
+  background-color: rgba(0, 255, 255, 0.1);
+  box-shadow: 0 0 15px var(--primary), 0 0 30px var(--primary) inset;
+  border-color: var(--primary);
+  color: var(--text-light);
+  font-weight: bold;
 }
-li.warp { animation: warpZoom 0.5s ease-out forwards; }
-@keyframes warpZoom { 0%{transform:scale(1);opacity:1;}50%{transform:scale(1.4);opacity:0.7;}100%{transform:scale(1);opacity:1;} }
+
+li.warp {
+  animation: warpZoom 0.5s ease-out forwards;
+}
+
+@keyframes warpZoom {
+  0% {
+    transform: scale(1);
+    opacity: 1;
+  }
+  50% {
+    transform: scale(1.4);
+    opacity: 0.7;
+  }
+  100% {
+    transform: scale(1);
+    opacity: 1;
+  }
+}
 
 .remove-btn {
-  cursor:pointer; width:20px; height:20px; background:rgba(255,255,255,0.15); border-radius:50%;
-  display:flex; align-items:center; justify-content:center; transition:background-color 0.3s ease, transform 0.2s ease; flex-shrink:0;
+  cursor: pointer;
+  width: 20px;
+  height: 20px;
+  background: linear-gradient(145deg, var(--primary), var(--secondary));
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 0 8px var(--primary);
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+  flex-shrink: 0;
 }
-.remove-btn:hover { background-color: rgba(255,255,255,0.35); transform:scale(1.2);}
-.remove-btn svg { width:12px; height:12px; stroke:white; stroke-width:2.5; stroke-linecap:round; stroke-linejoin:round; }
 
-#result {
-  margin-top:25px; font-size:26px; font-weight:bold; color:#00f0ff;
-  text-shadow:0 0 10px #00f0ff; min-height:40px; max-width:440px; text-align:center; user-select:none;
+.remove-btn:hover {
+  transform: scale(1.2);
+  box-shadow: 0 0 12px var(--primary);
 }
 
-.bg-switcher, .file-controls {
-  position:absolute; top:10px; display:flex; gap:8px; z-index:2;
-}
-.bg-switcher { right:10px; } .file-controls { left:10px; }
-.bg-switcher button, .file-controls button {
-  padding:6px 10px; font-size:12px; cursor:pointer; border:none; border-radius:4px;
-  background: linear-gradient(145deg,#00f0ff,#007c91); color:white; text-shadow:0 0 3px #000;
-  box-shadow:0 0 8px #00f0ff; transition:transform 0.2s ease; user-select:none;
-}
-.bg-switcher button:hover, .file-controls button:hover { transform: scale(1.1); }
 
-.list-controls { position:relative; display:flex; align-items:center; gap:8px; margin-bottom:12px; max-width:440px; width:100%; justify-content:center;}
-.custom-dropdown { position:relative; flex:1; }
+.remove-btn svg {
+  width: 12px;
+  height: 12px;
+  stroke: white;
+  stroke-width: 2.5;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
+.bg-switcher,
+
+.file-controls {
+  position: absolute;
+  top: 10px;
+  display: flex;
+  gap: 8px;
+  z-index: 2;
+}
+
+.bg-switcher {
+  right: 10px;
+}
+
+.file-controls {
+  left: 10px;
+}
+
+.bg-switcher button {
+  width: 34px;
+  height: 34px;
+  font-size: 16px;
+  cursor: pointer;
+  border: none;
+  border-radius: 4px;
+  background: linear-gradient(145deg, var(--primary), var(--secondary));
+  color: white;
+  text-shadow: 0 0 5px #000;
+  box-shadow: 0 0 10px var(--primary);
+  transition: transform 0.2s ease;
+  user-select: none;
+  padding: 0;
+}
+
+.file-controls button {
+  width: 34px;
+  height: 34px;
+  font-size: 12px;
+  cursor: pointer;
+  border: none;
+  border-radius: 4px;
+  background: linear-gradient(145deg, var(--primary), var(--secondary));
+  color: white;
+  text-shadow: 0 0 5px #000;
+  box-shadow: 0 0 10px var(--primary);
+  transition: transform 0.2s ease;
+  user-select: none;
+  padding: 0;
+}
+
+.bg-switcher button:hover {
+  transform: scale(1.15);
+}
+
+.file-controls button:hover {
+  transform: scale(1.15);
+}
+
+.list-controls {
+  position: relative;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 12px;
+  max-width: 440px;
+  width: 100%;
+  justify-content: center;
+}
+
+.custom-dropdown {
+  position: relative;
+  flex: 1;
+}
+
 .dropdown-selected {
-  padding:10px; border:2px solid rgba(0,255,255,0.3); border-radius:20px;
-  background-color: rgba(255,255,255,0.08); color:#b0eaff; text-align:center; cursor:pointer; transition:0.3s; box-shadow:0 0 5px rgba(0,240,255,0.2);
+  padding: 10px;
+  border: 2px solid rgba(0, 255, 255, 0.3);
+  border-radius: 20px;
+  background-color: rgba(255, 255, 255, 0.08);
+  color: var(--text-light);
+  text-align: center;
+  cursor: pointer;
+  transition: 0.3s;
+  box-shadow: 0 0 5px rgba(0, 240, 255, 0.2);
 }
+
 .dropdown-selected.active {
-  background-color: rgba(0,255,255,0.1); border-color:#00f0ff; color:#fff; font-weight:bold;
-  animation: dropdownPulse 1.5s forwards;
+  background-color: rgba(0, 255, 255, 0.1);
+  border-color: var(--primary);
+  color: var(--text-light);
+  font-weight: bold;
 }
+
 @keyframes dropdownPulse {
-  0%{box-shadow:0 0 5px #00f0ff;background-color:rgba(0,255,255,0.08);}
-  50%{box-shadow:0 0 15px #00f0ff,0 0 30px #00f0ff inset;background-color:rgba(0,255,255,0.12);}
-  100%{box-shadow:0 0 5px #00f0ff;background-color:rgba(0,255,255,0.08);}
+  0% {
+    box-shadow: 0 0 5px var(--primary);
+    background-color: rgba(0, 255, 255, 0.08);
+  }
+  50% {
+    box-shadow: 0 0 15px var(--primary), 0 0 30px var(--primary) inset;
+    background-color: rgba(0, 255, 255, 0.12);
+  }
+  100% {
+    box-shadow: 0 0 5px var(--primary);
+    background-color: rgba(0, 255, 255, 0.08);
+  }
 }
+
 .dropdown-options {
-  position:absolute; top:calc(100% + 6px); left:0; right:0;
-  background: rgba(0,0,0,0.9); border:2px solid #00f0ff; border-radius:12px;
-  max-height:220px; overflow-y:auto; box-shadow:0 0 15px #00f0ff; z-index:10;
-  padding:6px; display:none; opacity:0; transform:scaleY(0.8); transform-origin:top center;
+  position: absolute;
+  top: calc(100% + 6px);
+  left: 0;
+  right: 0;
+  background: rgba(0, 0, 0, 0.9);
+  border: 2px solid var(--primary);
+  border-radius: 12px;
+  max-height: 220px;
+  overflow-y: auto;
+  box-shadow: 0 0 15px var(--primary);
+  z-index: 10;
+  padding: 6px;
+  display: none;
+  opacity: 0;
+  transform: scaleY(0.8);
+  transform-origin: top center;
   transition: opacity 0.25s ease, transform 0.25s ease;
 }
-.dropdown-options.active { display:block; opacity:1; transform:scaleY(1); animation: neonPulse 1.5s infinite alternate; }
-.dropdown-options div { padding:8px; border-radius:8px; cursor:pointer; transition:0.2s; color:#b0eaff; text-align:center; }
-.dropdown-options div:hover { background: rgba(0,255,255,0.2); color:#fff; font-weight:bold; box-shadow:0 0 8px #00f0ff inset; }
 
-@keyframes neonPulse { from { box-shadow:0 0 10px #00f0ff;} to { box-shadow:0 0 20px #00f0ff,0 0 40px #00f0ff inset;} }
+
+.dropdown-options.active {
+  display: block;
+  opacity: 1;
+  transform: scaleY(1);
+  animation: neonPulse 1.5s infinite alternate;
+}
+
+.dropdown-options div {
+  padding: 8px;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: 0.2s;
+  color: var(--text-light);
+  text-align: center;
+}
+
+.dropdown-options div:hover {
+  background: rgba(0, 255, 255, 0.2);
+  color: var(--text-light);
+  font-weight: bold;
+  box-shadow: 0 0 8px var(--primary) inset;
+}
+
+
+@keyframes neonPulse {
+  from {
+    box-shadow: 0 0 10px var(--primary);
+  }
+  to {
+    box-shadow: 0 0 20px var(--primary), 0 0 40px var(--primary) inset;
+  }
+}
 
 .list-controls button {
-  width:34px; height:34px; font-size:18px; cursor:pointer; border:none; border-radius:50%;
-  background: linear-gradient(145deg,#00f0ff,#007c91); color:white; text-shadow:0 0 5px #000; box-shadow:0 0 10px #00f0ff; transition: transform 0.2s ease; user-select:none;
+  width: 34px;
+  height: 34px;
+  font-size: 18px;
+  cursor: pointer;
+  border: none;
+  border-radius: 50%;
+  background: linear-gradient(145deg, var(--primary), var(--secondary));
+  color: white;
+  text-shadow: 0 0 5px #000;
+  box-shadow: 0 0 10px var(--primary);
+  transition: transform 0.2s ease;
+  user-select: none;
 }
-.list-controls button:hover { transform: scale(1.15); }
+
+
+.list-controls button:hover {
+  transform: scale(1.15);
+}
 
 .custom-modal {
-  position:fixed; top:0; left:0; right:0; bottom:0; display:flex; align-items:center; justify-content:center;
-  background: rgba(0,0,0,0.6); z-index:999; opacity:1; transition:opacity 0.3s ease-out;
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: rgba(0, 0, 0, 0.6);
+  z-index: 999;
+  opacity: 1;
+  transition: opacity 0.3s ease-out;
 }
-.custom-modal.closing { opacity:0; }
+
+
+.custom-modal.closing { 
+	opacity:0; 
+	}
+
 .custom-modal-content {
-  background: rgba(0,0,0,0.8); border:2px solid #00f0ff; border-radius:12px; padding:20px;
-  color:#fff; text-align:center; box-shadow:0 0 15px #00f0ff; max-width:320px; animation: modalAppear 0.35s ease-out;
+  background: rgba(0, 0, 0, 0.8);
+  border: 2px solid var(--primary);
+  border-radius: 12px;
+  padding: 20px;
+  color: var(--text-light);
+  text-align: center;
+  box-shadow: 0 0 15px var(--primary);
+  max-width: 320px;
+  animation: modalAppear 0.35s ease-out;
 }
-.custom-modal-content.closing { animation: modalDisappear 0.3s ease-out forwards; }
-@keyframes modalAppear {0%{opacity:0;transform:scale(0.8);}60%{opacity:1;transform:scale(1.05);}100%{opacity:1;transform:scale(1);}}
-@keyframes modalDisappear {0%{opacity:1;transform:scale(1);}100%{opacity:0;transform:scale(0.8);}}
-.custom-modal-content input { margin-top:10px;width:90%;padding:8px;border-radius:6px;border:none;background:#222;color:#fff;}
-.custom-modal-content button { margin-top:15px;padding:8px 14px;border:none;border-radius:6px;background: linear-gradient(145deg,#00f0ff,#007c91);color:white;cursor:pointer;box-shadow:0 0 8px #00f0ff; }
-.custom-modal-content button + button { margin-left:10px; }
 
-.winner-glow { animation: neonPulse 1.5s infinite alternate; box-shadow:0 0 15px #00f0ff,0 0 30px #00f0ff inset; border-color:#00f0ff; color:#fff; font-weight:bold; }
 
-.modal-chip-text { color:#b0eaff; font-family:'Orbitron',sans-serif; font-size:14px; font-weight:normal; text-align:center; text-shadow:0 0 5px rgba(0,240,255,0.2); margin:4px 0; }
-.modal-glow { animation: neonPulse 1.5s infinite alternate; border-color:#00f0ff; box-shadow:0 0 15px #00f0ff,0 0 30px #00f0ff inset; }
+.custom-modal-content.closing {
+  animation: modalDisappear 0.3s ease-out forwards;
+}
+
+@keyframes modalAppear {
+  0% {
+    opacity: 0;
+    transform: scale(0.8);
+  }
+  60% {
+    opacity: 1;
+    transform: scale(1.05);
+  }
+  100% {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+@keyframes modalDisappear {
+  0% {
+    opacity: 1;
+    transform: scale(1);
+  }
+  100% {
+    opacity: 0;
+    transform: scale(0.8);
+  }
+}
+
+.custom-modal-content input {
+  margin-top: 10px;
+  width: 100%;
+  padding: 8px 10px;
+  border-radius: 5px;
+  border: 2px solid transparent;
+  background-color: #222;
+  color: var(--text-light);
+  box-sizing: border-box;
+  transition: border 0.2s ease, box-shadow 0.2s ease;
+}
+
+.custom-modal-content input:focus {
+  outline: none;
+  border: 2px solid var(--primary);
+  box-shadow: 0 0 10px var(--primary);
+}
+
+.custom-modal-content button {
+  margin-top: 15px;
+  padding: 8px 14px;
+  border: none;
+  border-radius: 6px;
+  background: linear-gradient(145deg, var(--primary), var(--secondary));
+  color: white;
+  cursor: pointer;
+  box-shadow: 0 0 8px var(--primary);
+}
+
+.custom-modal-content button + button {
+  margin-left: 10px;
+}
+
+.winner-glow {
+  animation: neonPulse 1.5s infinite alternate;
+  box-shadow: 0 0 15px var(--primary), 0 0 30px var(--primary) inset;
+  border-color: var(--primary);
+  color: var(--text-light);
+  font-weight: bold;
+}
+
+.modal-chip-text {
+  color: var(--text-light);
+  font-family: 'Orbitron', sans-serif;
+  font-size: 14px;
+  font-weight: normal;
+  text-align: center;
+  text-shadow: 0 0 5px rgba(0, 240, 255, 0.2);
+  margin: 4px 0;
+}
+
+.modal-glow {
+  animation: neonPulse 1.5s infinite alternate;
+  border-color: var(--primary);
+  box-shadow: 0 0 15px var(--primary), 0 0 30px var(--primary) inset;
+}
+
+.burger-menu {
+  position: fixed;
+  bottom: 15px;
+  right: 15px;
+  z-index: 1000;
+}
+
+.burger-menu button {
+  width: 32px;
+  height: 32px;
+  font-size: 16px;
+  cursor: pointer;
+  border: none;
+  border-radius: 50%;
+  background: linear-gradient(145deg, var(--primary), var(--secondary));
+  color: white;
+  text-shadow: 0 0 5px #000;
+  box-shadow: 0 0 8px var(--primary);
+  transition: transform 0.2s ease;
+  user-select: none;
+}
+
+.burger-menu button:hover {
+  transform: scale(1.15);
+}
+
+.custom-modal-content ul li {
+  cursor: default;
+}
+
+.vertical-buttons {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.plus-grid {
+  display: grid;
+  grid-template-columns: 40px 40px 40px;
+  grid-template-rows: 40px 40px 40px;
+  gap: 6px;
+  justify-items: center;
+  align-items: center;
+}
+
+.up-btn {
+  grid-column: 2;
+  grid-row: 1;
+}
+
+.about-btn {
+  grid-column: 2;
+  grid-row: 2;
+}
+
+.left-btn {
+  grid-column: 1;
+  grid-row: 2;
+}
+
+.right-btn {
+  grid-column: 3;
+  grid-row: 2;
+}
+
+.down-btn {
+  grid-column: 2;
+  grid-row: 3;
+}
+
+.plus-grid button {
+  width: 36px;
+  height: 36px;
+  font-size: 16px;
+  cursor: pointer;
+  border: none;
+  border-radius: 4px;
+  background: linear-gradient(145deg,var(--primary),var(--secondary));
+  color: white;
+  text-shadow: 0 0 5px #000;
+  box-shadow: 0 0 10px var(--primary);
+  transition: transform 0.2s ease;
+  user-select: none;
+}
+
+.plus-grid button:hover {
+  transform: scale(1.15);
+}
+
 </style>
 </head>
 <body>
+
+<div
+  id="bgOverlay"
+  style="
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-size: cover;
+    background-position: center;
+    background-repeat: no-repeat;
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 1s ease;
+  "
+></div>
+
+
 <div class="bg-switcher">
-  <button onclick="prevBg()">⟵</button>
-  <button onclick="showAboutModal()">?</button>
-  <button onclick="nextBg()">⟶</button>
+  <div class="plus-grid">
+    <button class="up-btn" onclick="scrollUp()">▲</button>
+    <button class="about-btn" onclick="showAboutModal()">?</button>
+    <button class="left-btn" onclick="prevBg()">⟵</button>
+    <button class="right-btn" onclick="nextBg()">⟶</button>
+    <button class="down-btn" onclick="scrollDown()">▼</button>
+  </div>
 </div>
+
 <div class="file-controls">
   <button onclick="saveToFile()">Save</button>
   <button onclick="loadFromFile()">Load</button>
@@ -162,6 +678,7 @@ li.warp { animation: warpZoom 0.5s ease-out forwards; }
 
 <main>
 <h1>Board Game Picker</h1>
+
 <div class="list-controls">
   <div class="custom-dropdown">
     <div id="dropdownSelected" class="dropdown-selected">Select List</div>
@@ -183,11 +700,40 @@ li.warp { animation: warpZoom 0.5s ease-out forwards; }
   <button onclick="clearSelection()">Clear Selection</button>
 </div>
 
+<div class="burger-menu">
+  <button onclick="showBurgerMenu()">☰</button>
+</div>
+
 <ul id="gameList"></ul>
 <div id="result"></div>
 </main>
 
 <script>
+// ---------- Theme Switching ----------
+const themes = ["theme-blue", "theme-red", "theme-cyberpunk", "theme-matrix"];
+let currentThemeIndex = 0;
+
+function applyTheme(index) {
+  document.body.classList.remove(...themes);
+  currentThemeIndex = (index + themes.length) % themes.length;
+  document.body.classList.add(themes[currentThemeIndex]);
+  localStorage.setItem("themeIndex", currentThemeIndex);
+}
+
+function scrollUp() {
+  applyTheme(currentThemeIndex + 1); // cycle forward
+}
+
+function scrollDown() {
+  applyTheme(currentThemeIndex - 1); // cycle backward
+}
+
+window.addEventListener("load", () => {
+  const savedTheme = localStorage.getItem("themeIndex");
+  applyTheme(savedTheme !== null ? parseInt(savedTheme) : 0);
+});
+
+
 // ---------- Backgrounds ----------
 const backgrounds = [
   'https://images.unsplash.com/photo-1462331940025-496dfbfc7564?auto=format&fit=crop&w=1920&q=80',
@@ -197,112 +743,505 @@ const backgrounds = [
   'https://images.unsplash.com/photo-1677357623576-7c8aab08da22?auto=format&fit=crop&w=1920&q=80'
 ];
 let currentBg = 0;
-function setBg(index){ currentBg=(index+backgrounds.length)%backgrounds.length; document.body.style.backgroundImage=`url('${backgrounds[currentBg]}')`; localStorage.setItem('bgIndex',currentBg);}
-function nextBg(){ setBg(currentBg+1); } function prevBg(){ setBg(currentBg-1); }
-window.addEventListener('load',()=>{ const savedBg = localStorage.getItem('bgIndex'); setBg(savedBg!==null?parseInt(savedBg):0); });
+
+function setBg(index) {
+  const overlay = document.getElementById('bgOverlay');
+  const nextIndex = (index + backgrounds.length) % backgrounds.length;
+
+  overlay.style.backgroundImage = `url('${backgrounds[nextIndex]}')`;
+  overlay.style.opacity = 1; // start fade-in
+
+  setTimeout(() => {
+    document.body.style.backgroundImage = `url('${backgrounds[nextIndex]}')`;
+    overlay.style.opacity = 0;
+    currentBg = nextIndex;
+    localStorage.setItem('bgIndex', currentBg);
+  }, 1000); // match CSS transition duration
+}
+
+function nextBg() {
+  setBg(currentBg + 1);
+}
+function prevBg() {
+  setBg(currentBg - 1);
+}
+window.addEventListener('load', () => {
+  const savedBg = localStorage.getItem('bgIndex');
+  setBg(savedBg !== null ? parseInt(savedBg) : 0);
+});
 
 // ---------- Lists ----------
-let allLists = JSON.parse(localStorage.getItem('boardGameLists'))||{"Default":[]};
+let allLists = JSON.parse(localStorage.getItem('boardGameLists')) || { "Default": [] };
 let currentList = Object.keys(allLists)[0];
 const selectedIndices = new Set();
-function saveLists(){ localStorage.setItem('boardGameLists',JSON.stringify(allLists)); }
+function saveLists() {
+  localStorage.setItem('boardGameLists', JSON.stringify(allLists));
+}
 
 // ---------- Dropdown ----------
-function renderDropdown(){
-  const dropdownSelected=document.getElementById('dropdownSelected');
-  const dropdownOptions=document.getElementById('dropdownOptions');
-  dropdownSelected.textContent=currentList;
-  dropdownOptions.innerHTML='';
-  Object.keys(allLists).forEach(name=>{
-    const div=document.createElement('div'); div.textContent=name;
-    div.onclick=()=>{ currentList=name; selectedIndices.clear(); renderGames(); dropdownSelected.textContent=name; closeDropdown(); };
+function renderDropdown() {
+  const dropdownSelected = document.getElementById('dropdownSelected');
+  const dropdownOptions = document.getElementById('dropdownOptions');
+
+  dropdownSelected.textContent = currentList;
+  dropdownOptions.innerHTML = '';
+
+  Object.keys(allLists).forEach(name => {
+    const div = document.createElement('div');
+    div.textContent = name;
+
+    div.onclick = () => {
+      currentList = name;
+      selectedIndices.clear();
+      renderGames();
+      dropdownSelected.textContent = name;
+      closeDropdown();
+    };
+
     dropdownOptions.appendChild(div);
   });
 }
-function toggleDropdown(){ const dropdownOptions=document.getElementById('dropdownOptions'); const dropdownSelected=document.getElementById('dropdownSelected'); const isActive=dropdownOptions.classList.contains('active'); if(isActive){dropdownOptions.classList.remove('active'); dropdownSelected.classList.remove('active');}else{dropdownOptions.classList.add('active'); dropdownSelected.classList.add('active');}}
-function closeDropdown(){ document.getElementById('dropdownOptions').classList.remove('active'); document.getElementById('dropdownSelected').classList.remove('active');}
-document.getElementById('dropdownSelected').onclick=toggleDropdown;
-document.addEventListener('click',(e)=>{ if(!e.target.closest('.custom-dropdown')) closeDropdown(); });
+
+function toggleDropdown() {
+  const dropdownOptions = document.getElementById('dropdownOptions');
+  const dropdownSelected = document.getElementById('dropdownSelected');
+  const isActive = dropdownOptions.classList.contains('active');
+
+  if (isActive) {
+    dropdownOptions.classList.remove('active');
+    dropdownSelected.classList.remove('active');
+  } else {
+    dropdownOptions.classList.add('active');
+    dropdownSelected.classList.add('active');
+  }
+}
+
+function closeDropdown() {
+  document.getElementById('dropdownOptions').classList.remove('active');
+  document.getElementById('dropdownSelected').classList.remove('active');
+}
+
+document.getElementById('dropdownSelected').onclick = toggleDropdown;
+
+document.addEventListener('click', (e) => {
+  if (!e.target.closest('.custom-dropdown')) closeDropdown();
+});
+
 
 // ---------- Games ----------
-function renderGames(){
-  const list=document.getElementById('gameList'); list.innerHTML='';
-  const games=allLists[currentList]||[];
-  games.forEach((game,index)=>{
-    const li=document.createElement('li'); li.textContent=game; if(selectedIndices.has(index)) li.classList.add('selected');
-    li.onclick=(e)=>{ if(e.target.closest('.remove-btn')) return; selectedIndices.has(index)?selectedIndices.delete(index):selectedIndices.add(index); renderGames(); };
-    const removeBtn=document.createElement('button'); removeBtn.className='remove-btn';
-    removeBtn.innerHTML=`<svg viewBox="0 0 24 24" fill="none"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>`;
-    removeBtn.onclick=()=>{ showModal(`Remove "${game}" from the list?`, confirm=>{ if(confirm){li.classList.add('warp'); setTimeout(()=>{ allLists[currentList].splice(index,1); selectedIndices.delete(index); saveLists(); renderGames(); },500); }}, true); };
-    li.appendChild(removeBtn); list.appendChild(li);
+function renderGames() {
+  const list = document.getElementById('gameList');
+  list.innerHTML = '';
+
+  const games = allLists[currentList] || [];
+
+  games.forEach((game, index) => {
+    const li = document.createElement('li');
+    li.textContent = game;
+
+    if (selectedIndices.has(index)) {
+      li.classList.add('selected');
+    }
+
+    li.onclick = (e) => {
+      if (e.target.closest('.remove-btn')) return;
+
+      if (selectedIndices.has(index)) {
+        selectedIndices.delete(index);
+      } else {
+        selectedIndices.add(index);
+      }
+
+      renderGames();
+    };
+
+    const removeBtn = document.createElement('button');
+    removeBtn.className = 'remove-btn';
+    removeBtn.innerHTML = `
+      <svg viewBox="0 0 24 24" fill="none">
+        <line x1="18" y1="6" x2="6" y2="18"></line>
+        <line x1="6" y1="6" x2="18" y2="18"></line>
+      </svg>
+    `;
+
+    removeBtn.onclick = () => {
+      showModal(`Remove "${game}" from the list?`, (confirm) => {
+        if (confirm) {
+          li.classList.add('warp');
+          setTimeout(() => {
+            allLists[currentList].splice(index, 1);
+            selectedIndices.delete(index);
+            saveLists();
+            renderGames();
+          }, 500);
+        }
+      }, true);
+    };
+
+    li.appendChild(removeBtn);
+    list.appendChild(li);
   });
 }
-function addGame(){
-  const input=document.getElementById('gameInput'); const game=input.value.trim();
-  if(game){ if(allLists[currentList].some(g=>g.toLowerCase()===game.toLowerCase())){ showModal(`"${game}" already exists in the list.`); input.value=''; return;} allLists[currentList].push(game); input.value=''; saveLists(); renderGames();}
+
+
+function addGame() {
+  const input = document.getElementById('gameInput');
+  const game = input.value.trim();
+
+  if (game) {
+    if (allLists[currentList].some(g => g.toLowerCase() === game.toLowerCase())) {
+      showModal(`"${game}" already exists in the list.`);
+      input.value = '';
+      return;
+    }
+
+    allLists[currentList].push(game);
+    input.value = '';
+    saveLists();
+    renderGames();
+  }
 }
-document.getElementById('gameInput').addEventListener('keydown',(e)=>{ if(e.key==='Enter') addGame(); });
-function clearSelection(){ selectedIndices.clear(); renderGames(); }
+
+document.getElementById('gameInput').addEventListener('keydown', (e) => {
+  if (e.key === 'Enter') addGame();
+});
+
+
+function clearSelection() {
+  selectedIndices.clear();
+  renderGames();
+}
+
+function clearPreviousGlow() {
+  document.querySelectorAll('.winner-glow').forEach(el => 
+    el.classList.remove('winner-glow')
+  );
+}
 
 // ---------- Pick Game ----------
-function clearPreviousGlow(){ document.querySelectorAll('.winner-glow').forEach(el=>el.classList.remove('winner-glow')); }
-function pickGame(){
-  clearPreviousGlow(); const pickBtn=document.getElementById('pickBtn'); pickBtn.disabled=true; pickBtn.textContent="Picking..."; const result=document.getElementById('result'); const games=allLists[currentList]||[];
-  if(games.length===0){ result.textContent="No games in list!"; pickBtn.disabled=false; pickBtn.textContent="Pick a Game!"; return;}
-  let candidates=[...selectedIndices].map(i=>games[i]); if(candidates.length===0) candidates=games;
-  let counter=0,previousLi=null; const interval=setInterval(()=>{
-    const randomGame=candidates[Math.floor(Math.random()*candidates.length)];
-    const listItems=document.querySelectorAll('#gameList li');
-    if(previousLi) previousLi.classList.remove('warp');
-    const winnerIndex=games.indexOf(randomGame);
-    if(winnerIndex>=0){ const currentLi=listItems[winnerIndex]; currentLi.classList.add('warp'); previousLi=currentLi;}
-    counter++; if(counter>15){ clearInterval(interval); if(previousLi) previousLi.classList.remove('warp'); const winnerLi=listItems[games.indexOf(randomGame)]; if(winnerLi){ winnerLi.classList.add('warp','winner-glow'); setTimeout(()=>winnerLi.classList.remove('warp'),500); } pickBtn.disabled=false; pickBtn.textContent="Pick a Game!"; }
-  },120);
+function pickGame() {
+  clearPreviousGlow();
+
+  const pickBtn = document.getElementById('pickBtn');
+  pickBtn.disabled = true;
+  pickBtn.textContent = "Picking...";
+
+  const result = document.getElementById('result');
+  const games = allLists[currentList] || [];
+
+  if (games.length === 0) {
+    result.textContent = "No games in list!";
+    pickBtn.disabled = false;
+    pickBtn.textContent = "Pick a Game!";
+    return;
+  }
+
+  let candidates = [...selectedIndices].map(i => games[i]);
+  if (candidates.length === 0) candidates = games;
+
+  let counter = 0,
+      previousLi = null;
+
+  const interval = setInterval(() => {
+    const randomGame = candidates[Math.floor(Math.random() * candidates.length)];
+    const listItems = document.querySelectorAll('#gameList li');
+
+    if (previousLi) previousLi.classList.remove('warp');
+
+    const winnerIndex = games.indexOf(randomGame);
+    if (winnerIndex >= 0) {
+      const currentLi = listItems[winnerIndex];
+      currentLi.classList.add('warp');
+      previousLi = currentLi;
+    }
+
+    counter++;
+
+	if(counter>15){
+	  clearInterval(interval);
+	  if(previousLi) previousLi.classList.remove('warp');
+	  const winnerLi = listItems[games.indexOf(randomGame)];
+	  if(winnerLi){
+		winnerLi.classList.add('warp','winner-glow');
+		setTimeout(()=>winnerLi.classList.remove('warp'),500);
+
+		// ---- SAVE WINNER HISTORY ----
+		const now = new Date();
+		const timestamp = now.getFullYear() + "." +
+		  String(now.getMonth()+1).padStart(2,'0') + "." +
+		  String(now.getDate()).padStart(2,'0') + " " +
+		  String(now.getHours()).padStart(2,'0') + ":" +
+		  String(now.getMinutes()).padStart(2,'0');
+		const entry = `${randomGame} - ${timestamp}`;
+		let history = JSON.parse(localStorage.getItem('winnersHistory')) || [];
+		history.unshift(entry);               // add newest first
+		history = history.slice(0,10);        // keep only last 10
+		localStorage.setItem('winnersHistory', JSON.stringify(history));
+	  }
+	  pickBtn.disabled=false;
+	  pickBtn.textContent="Pick a Game!";
+	}
+  }, 120);
 }
+
 
 // ---------- Modal ----------
-function closeModal(modal){ modal.classList.add('closing'); const content=modal.querySelector('.custom-modal-content'); content.classList.add('closing'); content.addEventListener('animationend',()=>{ if(modal.parentNode) document.body.removeChild(modal); },{once:true}); }
-function showModal(message, callback=null, confirmMode=false, placeholder=""){
-  const modal=document.createElement('div'); modal.className='custom-modal';
-  const content=document.createElement('div'); content.className='custom-modal-content'; content.innerHTML=`<p>${message}</p>`;
-  if(confirmMode){ const yesBtn=document.createElement('button'); yesBtn.textContent="Yes"; yesBtn.onclick=()=>{ closeModal(modal); callback(true); }; const noBtn=document.createElement('button'); noBtn.textContent="No"; noBtn.onclick=()=>{ closeModal(modal); callback(false); }; content.appendChild(yesBtn); content.appendChild(noBtn); }
-  else if(callback){ const input=document.createElement('input'); input.type='text'; if(placeholder) input.placeholder=placeholder; content.appendChild(input);
-    const okBtn=document.createElement('button'); okBtn.textContent='OK'; okBtn.onclick=()=>{ closeModal(modal); callback(input.value.trim(),input); }; content.appendChild(okBtn); setTimeout(()=>input.focus(),0); input.addEventListener('keydown',e=>{ if(e.key==='Enter') okBtn.click();});
-  } else{ const okBtn=document.createElement('button'); okBtn.textContent='OK'; okBtn.onclick=()=>{ closeModal(modal); }; content.appendChild(okBtn);}
-  modal.appendChild(content); document.body.appendChild(modal);
+function closeModal(modal) {
+  modal.classList.add('closing');
+
+  const content = modal.querySelector('.custom-modal-content');
+  content.classList.add('closing');
+
+  content.addEventListener('animationend', () => {
+    if (modal.parentNode) {
+      document.body.removeChild(modal);
+    }
+  }, { once: true });
 }
 
+function showModal(message, callback = null, confirmMode = false, placeholder = "") {
+  const modal = document.createElement('div');
+  modal.className = 'custom-modal';
+
+  const content = document.createElement('div');
+  content.className = 'custom-modal-content';
+  content.innerHTML = `<p>${message}</p>`;
+
+  if (confirmMode) {
+    const yesBtn = document.createElement('button');
+    yesBtn.textContent = "Yes";
+    yesBtn.onclick = () => {
+      closeModal(modal);
+      callback(true);
+    };
+
+    const noBtn = document.createElement('button');
+    noBtn.textContent = "No";
+    noBtn.onclick = () => {
+      closeModal(modal);
+      callback(false);
+    };
+
+    content.appendChild(yesBtn);
+    content.appendChild(noBtn);
+
+  } else if (callback) {
+    const input = document.createElement('input');
+    input.type = 'text';
+    if (placeholder) input.placeholder = placeholder;
+    content.appendChild(input);
+
+    const okBtn = document.createElement('button');
+    okBtn.textContent = 'OK';
+    okBtn.onclick = () => {
+      closeModal(modal);
+      callback(input.value.trim(), input);
+    };
+    content.appendChild(okBtn);
+
+    setTimeout(() => input.focus(), 0);
+    input.addEventListener('keydown', e => {
+      if (e.key === 'Enter') okBtn.click();
+    });
+
+  } else {
+    const okBtn = document.createElement('button');
+    okBtn.textContent = 'OK';
+    okBtn.onclick = () => {
+      closeModal(modal);
+    };
+    content.appendChild(okBtn);
+  }
+
+  modal.appendChild(content);
+  document.body.appendChild(modal);
+}
+
+// ---------- Game History ----------
+	function showBurgerMenu() {
+	  const history = JSON.parse(localStorage.getItem('winnersHistory')) || [];
+	  let listHtml = "";
+
+	  if(history.length > 0){
+		listHtml = "<ul style='list-style:none; padding:0; margin:10px 0;'>";
+		history.forEach(entry=>{
+		  listHtml += `<li style="margin:4px 0; color:var(--text-light); font-size:14px; text-align:center;">${entry}</li>`;
+		});
+		listHtml += "</ul>";
+	  } else {
+		listHtml = `<div class="modal-chip-text">No winners yet.</div>`;
+	  }
+
+	  const modalContent = `
+		<div class="custom-modal-content modal-glow">
+		  <div class="modal-chip-text"><strong>Winners History</strong></div>
+		  ${listHtml}
+		</div>
+	  `;
+
+	  const modal = document.createElement('div');
+	  modal.className = 'custom-modal';
+	  modal.innerHTML = modalContent;
+
+	  const closeBtn = document.createElement('button');
+	  closeBtn.textContent = 'Close';
+	  closeBtn.onclick = () => {
+		modal.classList.add('closing');
+		modal.querySelector('.custom-modal-content').classList.add('closing');
+		modal.querySelector('.custom-modal-content').addEventListener('animationend', () => {
+		  if(modal.parentNode) document.body.removeChild(modal);
+		}, { once:true });
+	  };
+
+	  const clearBtn = document.createElement('button');
+	  clearBtn.textContent = 'Clear History';
+	  clearBtn.onclick = () => {
+		localStorage.removeItem('winnersHistory');
+		modal.classList.add('closing');
+		modal.querySelector('.custom-modal-content').classList.add('closing');
+		modal.querySelector('.custom-modal-content').addEventListener('animationend', () => {
+		  if(modal.parentNode) document.body.removeChild(modal);
+		}, { once:true });
+	  };
+
+	  modal.querySelector('.custom-modal-content').appendChild(closeBtn);
+	  modal.querySelector('.custom-modal-content').appendChild(clearBtn);
+
+	  document.body.appendChild(modal);
+	}
+
 // ---------- Create/Delete List ----------
-function createList(){ showModal("Enter new list name:",(name,inputElement)=>{ if(name && !allLists[name]){ allLists[name]=[]; currentList=name; saveLists(); renderDropdown(); renderGames(); } },false,"Enter list name"); }
-function deleteList(){ if(Object.keys(allLists).length===1){ showModal("At least one list is required."); return;} showModal(`Delete list "${currentList}"?`,confirm=>{ if(confirm){ delete allLists[currentList]; currentList=Object.keys(allLists)[0]; saveLists(); renderDropdown(); renderGames(); }},true); }
+function createList() {
+  showModal(
+    "Enter new list name:",
+    (name, inputElement) => {
+      if (name && !allLists[name]) {
+        allLists[name] = [];
+        currentList = name;
+        saveLists();
+        renderDropdown();
+        renderGames();
+      }
+    },
+    false,
+    "Enter list name"
+  );
+}
+
+function deleteList() {
+  if (Object.keys(allLists).length === 1) {
+    showModal("At least one list is required.");
+    return;
+  }
+
+  showModal(
+    `Delete list "${currentList}"?`,
+    (confirm) => {
+      if (confirm) {
+        delete allLists[currentList];
+        currentList = Object.keys(allLists)[0];
+        saveLists();
+        renderDropdown();
+        renderGames();
+      }
+    },
+    true
+  );
+}
 
 // ---------- About Modal ----------
-function showAboutModal(){
-  const modalContent=`<div class="custom-modal-content modal-glow">
-    <div class="modal-chip-text"><strong>Board Game Picker</strong></div>
-    <div class="modal-chip-text">Pick a random game from your custom lists!</div>
-    <div class="modal-chip-text">Version 1.0</div>
-    <div class="modal-chip-text">by Szappanos Gábor</div>
-  </div>`;
-  const modal=document.createElement('div'); modal.className='custom-modal'; modal.innerHTML=modalContent;
-  const okBtn=document.createElement('button'); okBtn.textContent='OK';
-  okBtn.onclick=()=>{ modal.classList.add('closing'); modal.querySelector('.custom-modal-content').classList.add('closing'); modal.querySelector('.custom-modal-content').addEventListener('animationend',()=>{ if(modal.parentNode) document.body.removeChild(modal);},{once:true}); };
+function showAboutModal() {
+  const modalContent = `
+    <div class="custom-modal-content modal-glow">
+      <div class="modal-chip-text"><strong>Board Game Picker</strong></div>
+      <div class="modal-chip-text">Pick a random game from your custom lists!</div>
+      <div class="modal-chip-text">Version 1.0</div>
+      <div class="modal-chip-text">by Szappanos Gábor</div>
+    </div>
+  `;
+
+  const modal = document.createElement('div');
+  modal.className = 'custom-modal';
+  modal.innerHTML = modalContent;
+
+  const okBtn = document.createElement('button');
+  okBtn.textContent = 'OK';
+  okBtn.onclick = () => {
+    modal.classList.add('closing');
+    const content = modal.querySelector('.custom-modal-content');
+    content.classList.add('closing');
+    content.addEventListener('animationend', () => {
+      if (modal.parentNode) {
+        document.body.removeChild(modal);
+      }
+    }, { once: true });
+  };
+
   modal.querySelector('.custom-modal-content').appendChild(okBtn);
   document.body.appendChild(modal);
 }
 
 // ---------- File Save/Load ----------
-function saveToFile(){
-  let content=''; for(const [listName,games] of Object.entries(allLists)){ content+=`[${listName}]\n`; games.forEach(g=>content+=g+'\n'); content+='\n';}
-  const blob=new Blob([content],{type:'text/plain'}); const link=document.createElement('a'); link.download=`boardGameLists.txt`; link.href=URL.createObjectURL(blob); link.click(); URL.revokeObjectURL(link.href);
+function saveToFile() {
+  let content = '';
+
+  for (const [listName, games] of Object.entries(allLists)) {
+    content += `[${listName}]\n`;
+    games.forEach(g => content += g + '\n');
+    content += '\n';
+  }
+
+  const blob = new Blob([content], { type: 'text/plain' });
+  const link = document.createElement('a');
+  link.download = `boardGameLists.txt`;
+  link.href = URL.createObjectURL(blob);
+  link.click();
+  URL.revokeObjectURL(link.href);
 }
-function loadFromFile(){
-  const fileInput=document.getElementById('fileInput');
-  fileInput.onchange=(e)=>{ const file=e.target.files[0]; if(!file) return; const reader=new FileReader(); reader.onload=(ev)=>{ const text=ev.target.result; const lines=text.split(/\r?\n/); const loadedLists={}; let currentListName=null;
-    lines.forEach(line=>{ line=line.trim(); if(!line) return; const match=line.match(/^\[(.+)\]$/); if(match){ currentListName=match[1]; loadedLists[currentListName]=[];} else if(currentListName){ loadedLists[currentListName].push(line);} });
-    if(Object.keys(loadedLists).length>0){ allLists=loadedLists; currentList=Object.keys(allLists)[0]; selectedIndices.clear(); saveLists(); renderDropdown(); renderGames();}
-    else{ alert("No valid lists found in file."); }
-  }; reader.readAsText(file); }; fileInput.click();
+
+function loadFromFile() {
+  const fileInput = document.getElementById('fileInput');
+
+  fileInput.onchange = (e) => {
+    const file = e.target.files[0];
+    if (!file) return;
+
+    const reader = new FileReader();
+    reader.onload = (ev) => {
+      const text = ev.target.result;
+      const lines = text.split(/\r?\n/);
+      const loadedLists = {};
+      let currentListName = null;
+
+      lines.forEach(line => {
+        line = line.trim();
+        if (!line) return;
+
+        const match = line.match(/^\[(.+)\]$/);
+        if (match) {
+          currentListName = match[1];
+          loadedLists[currentListName] = [];
+        } else if (currentListName) {
+          loadedLists[currentListName].push(line);
+        }
+      });
+
+      if (Object.keys(loadedLists).length > 0) {
+        allLists = loadedLists;
+        currentList = Object.keys(allLists)[0];
+        selectedIndices.clear();
+        saveLists();
+        renderDropdown();
+        renderGames();
+      } else {
+        alert("No valid lists found in file.");
+      }
+    };
+
+    reader.readAsText(file);
+  };
+
+  fileInput.click();
 }
 
 renderDropdown(); renderGames();
