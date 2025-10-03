@@ -642,24 +642,6 @@ li.warp {
 </head>
 <body>
 
-<div
-  id="bgOverlay"
-  style="
-    position: fixed;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    background-size: cover;
-    background-position: center;
-    background-repeat: no-repeat;
-    opacity: 0;
-    pointer-events: none;
-    transition: opacity 1s ease;
-  "
-></div>
-
-
 <div class="bg-switcher">
   <div class="plus-grid">
     <button class="up-btn" onclick="scrollUp()">▲</button>
@@ -745,18 +727,10 @@ const backgrounds = [
 let currentBg = 0;
 
 function setBg(index) {
-  const overlay = document.getElementById('bgOverlay');
   const nextIndex = (index + backgrounds.length) % backgrounds.length;
-
-  overlay.style.backgroundImage = `url('${backgrounds[nextIndex]}')`;
-  overlay.style.opacity = 1; // start fade-in
-
-  setTimeout(() => {
-    document.body.style.backgroundImage = `url('${backgrounds[nextIndex]}')`;
-    overlay.style.opacity = 0;
-    currentBg = nextIndex;
-    localStorage.setItem('bgIndex', currentBg);
-  }, 1000); // match CSS transition duration
+  document.body.style.backgroundImage = `url('${backgrounds[nextIndex]}')`;
+  currentBg = nextIndex;
+  localStorage.setItem('bgIndex', currentBg);
 }
 
 function nextBg() {
