@@ -663,6 +663,73 @@ li.warp {
   opacity: 0;
 }
 
+.custom-modal-content button {
+  cursor: pointer;
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.custom-modal-content button:hover {
+  transform: scale(1.15);
+  box-shadow: 0 0 12px var(--primary);
+}
+
+/* Neon pulse effect for sliders and winners list items */
+.chart-slider-fill, .winners-list-item {
+  transition: all 0.3s ease;
+  animation: neonPulse 2s infinite alternate;
+}
+
+@keyframes neonPulse {
+  from {
+    box-shadow: 0 0 4px var(--primary);
+  }
+  to {
+    box-shadow: 0 0 12px var(--primary), 0 0 24px var(--primary) inset;
+  }
+}
+
+.achievement-button {
+  position: fixed;
+  bottom: 15px;
+  left: 15px;
+  z-index: 1000;
+}
+
+.achievement-button button {
+  width: 32px;
+  height: 32px;
+  font-size: 16px;
+  cursor: pointer;
+  border: none;
+  border-radius: 50%;
+  background: linear-gradient(145deg, var(--primary), var(--secondary));
+  color: white;
+  text-shadow: 0 0 5px #000;
+  box-shadow: 0 0 8px var(--primary);
+  transition: transform 0.2s ease;
+  user-select: none;
+}
+
+.achievement-button button:hover {
+  transform: scale(1.15);
+}
+
+@keyframes neonPulseButton {
+  0% {
+    box-shadow: 0 0 8px var(--primary);
+  }
+  50% {
+    box-shadow: 0 0 20px var(--primary), 0 0 40px var(--primary) inset;
+  }
+  100% {
+    box-shadow: 0 0 8px var(--primary);
+  }
+}
+
+.achievement-button.pulsing button {
+  animation: neonPulseButton 1.5s infinite alternate;
+}
+
 </style>
 </head>
 <body>
@@ -712,11 +779,191 @@ li.warp {
   <button onclick="showBurgerMenu()">☰</button>
 </div>
 
+<div class="achievement-button">
+  <button onclick="showAchievements()">
+    🏆
+  </button>
+</div>
+
 <ul id="gameList"></ul>
 <div id="result"></div>
 </main>
 
 <script>
+const appStartTime = Date.now();
+
+const achievements = [
+  { id: "curious", name: "Curious", unlocked: false, check: state => state.openAboutCount >= 1 },
+  { id: "fileExplorer", name: "File Explorer", unlocked: false, check: state => state.saveToFileCount >= 1 },
+  { id: "persistentPicker", name: "Persistent Picker", unlocked: false, check: state => state.emptyPickAttempts >= 1 },
+  { id: "gettingStarted",  name: "Getting Started", unlocked: false, check: state => state.listCount >= 1},
+  { id: "listCollector", name: "List Collector", unlocked: false, check: state => state.listCount >= 5, progress: 0},
+  { id: "listMaster", name: "List Master", unlocked: false, check: state => state.listCount >= 10, progress: 0},
+  { id: "springCleaning", name: "Spring Cleaning", unlocked: false, check: state => state.listdelCount >= 1},
+  { id: "chipReaper", name: "Chip Reaper", unlocked: false, check: state => state.removedGamesCount >= 10, progress: 0},
+  { id: "firstPick", name: "First Pick", unlocked: false, check: state => state.totalPicks >= 1, progress: 0},
+  { id: "masterGamer", name: "Master Gamer", unlocked: false, check: state => state.totalPicks >= 100, progress: 0},
+  { id: "veteranGamer", name: "Veteran Gamer", unlocked: false, check: state => state.totalPicks >= 250, progress: 0},
+  { id: "legendaryGamer", name: "Legendary Gamer", unlocked: false, check: state => state.totalPicks >= 1000, progress: 0},
+  { id: "bggExplorer", name: "BGG Explorer", unlocked: false, check: state => state.bggCount >= 1},
+  { id: "selectionSpecialist", name: "Selection Specialist", unlocked: false, check: state => state.clearSelectCount >= 10, progress: 0},
+  { id: "speedDemon", name: "Speed Demon", unlocked: false, check: state => state.speedDemonCount >= 1},  
+];
+
+const state = {
+  openAboutCount: 0,
+  saveToFileCount: 0,
+  emptyPickAttempts: 0,
+  listCount: 0,
+  listdelCount: 0,
+  removedGamesCount: 0,
+  totalPicks: 0,
+  bggCount: 0,
+  clearSelectCount: 0,
+  speedDemonCount: 0,
+};
+
+function checkAchievements() {
+  achievements.forEach(a => {
+    
+	// Handle progress for list-related achievements
+    if (["gettingStarted", "listCollector", "listMaster"].includes(a.id)) {
+      const thresholds = { gettingStarted: 1, listCollector: 5, listMaster: 10 };
+      const target = thresholds[a.id];
+      const rawProgress = Math.min(state.listCount / target, 1);
+      a.progress = Math.round(rawProgress * 100) / 100;
+    }
+
+    // Handle progress for chip removal achievement
+    if (a.id === "chipReaper") {
+      const target = 10;
+      const rawProgress = Math.min(state.removedGamesCount / target, 1);
+      a.progress = Math.round(rawProgress * 100) / 100;
+    }
+	
+	// Handle progress for clear selection achievement
+    if (a.id === "selectionSpecialist") {
+      const target = 10;
+      const rawProgress = Math.min(state.clearSelectCount / target, 1);
+      a.progress = Math.round(rawProgress * 100) / 100;
+    }
+	
+	if (["firstPick", "masterGamer", "veteranGamer"].includes(a.id)) {
+      const thresholds = { firstPick: 1, masterGamer: 100, veteranGamer: 250, legendaryGamer: 1000 };
+      const target = thresholds[a.id];
+      const rawProgress = Math.min(state.totalPicks / target, 1);
+      a.progress = Math.round(rawProgress * 100) / 100;
+    }
+
+    // Default progress for others if not set
+    if (a.progress === undefined) a.progress = a.unlocked ? 1 : 0;
+
+    // Check if unlocked
+    if (!a.unlocked && a.check(state)) {
+      a.unlocked = true;
+      a.progress = 1;
+      glowAndPulseAchievementChip(a.id);
+    }
+  });
+}
+
+function glowAndPulseAchievementChip(id) {
+  const container = document.querySelector('.achievement-button');
+  const btn = container.querySelector('button');
+  if (!btn) return;
+
+  // Add permanent pulsing glow until clicked
+  container.classList.add('pulsing');
+  console.log(`Achievement unlocked: ${id}`);
+}
+
+function showAchievements() {
+  const styles = getComputedStyle(document.body);
+  const primaryColor = styles.getPropertyValue('--primary').trim() || '#00f0ff';
+  const secondaryColor = styles.getPropertyValue('--secondary').trim() || '#007c91';
+
+  // Example structure: each achievement has { name, unlocked, progress } (progress = 0.0–1.0)
+  let itemsHtml = achievements.map(a => {
+    const progress = a.unlocked ? 1 : (a.progress ?? 0); // fallback to 0 if missing
+    const widthPercent = progress * 100;
+
+    return `
+      <div style="margin:8px 0;">
+        <div style="
+          display:flex;
+          align-items:center;
+          justify-content:space-between;
+          margin-bottom:4px;
+        ">
+          <div style="
+            font-size:14px;
+            text-align:left;
+            padding-right:8px;
+            color:${a.unlocked ? 'var(--text-light)' : 'rgba(180,180,180,0.5)'};
+            font-weight:${a.unlocked ? 'bold' : 'normal'};
+            text-shadow:${a.unlocked ? `0 0 5px ${primaryColor}, 0 0 10px ${primaryColor}` : 'none'};
+            flex:1;
+            white-space:nowrap;
+            overflow:hidden;
+            text-overflow:ellipsis;
+          ">
+            ${a.unlocked ? '🏆' : '🔒'} ${a.name}
+          </div>
+          <div style="font-size:12px; width:32px; text-align:right; color:rgba(255,255,255,0.6);">
+            ${Math.round(widthPercent)}%
+          </div>
+        </div>
+
+        <div style="height:8px; background:rgba(255,255,255,0.1); border-radius:6px; overflow:hidden;">
+          <div style="
+            width:${widthPercent}%;
+            height:100%;
+            background: linear-gradient(145deg, ${primaryColor}, ${secondaryColor});
+            border-radius:6px;
+            transition: width 0.3s ease;
+            opacity:${a.unlocked ? 1 : 0.6};
+            filter:${a.unlocked ? 'drop-shadow(0 0 6px ' + primaryColor + ')' : 'none'};
+          "></div>
+        </div>
+      </div>
+    `;
+  }).join("");
+
+  const modalContent = `
+    <div class="custom-modal-content modal-glow" style="width:400px; max-width:90vw;">
+      <div class="modal-chip-text" style="margin-bottom:10px;">
+        <strong>Achievements</strong>
+      </div>
+      ${itemsHtml}
+    </div>
+  `;
+
+  const modal = document.createElement('div');
+  modal.className = 'custom-modal';
+  modal.innerHTML = modalContent;
+  modal.style.userSelect = "none";
+  // Close button
+  const closeBtn = document.createElement('button');
+  closeBtn.textContent = 'Close';
+  closeBtn.style.marginTop = '12px';
+  closeBtn.style.padding = '6px 12px';
+  closeBtn.style.width = 'auto';
+  closeBtn.onclick = () => {
+    modal.classList.add('closing');
+    modal.querySelector('.custom-modal-content').classList.add('closing');
+    modal.querySelector('.custom-modal-content').addEventListener('animationend', () => {
+      if (modal.parentNode) document.body.removeChild(modal);
+    }, { once: true });
+  };
+
+  modal.querySelector('.custom-modal-content').appendChild(closeBtn);
+  document.body.appendChild(modal);
+
+  // Stop pulsing once clicked
+  document.querySelector('.achievement-button')?.classList.remove('pulsing');
+}
+
+
 // ---------- Theme Switching ----------
 const themes = ["theme-blue", "theme-red", "theme-cyberpunk", "theme-matrix", "theme-galaxy"];
 let currentThemeIndex = 0;
@@ -897,11 +1144,12 @@ function renderGames() {
             selectedIndices.delete(index);
             saveLists();
             renderGames();
+			state.removedGamesCount++;
+            checkAchievements();
           }, 500);
         }
       }, true);
     };
-
     li.appendChild(removeBtn);
     list.appendChild(li);
   });
@@ -934,6 +1182,8 @@ document.getElementById('gameInput').addEventListener('keydown', (e) => {
 function clearSelection() {
   selectedIndices.clear();
   renderGames();
+  state.clearSelectCount++;
+  checkAchievements();
 }
 
 function clearPreviousGlow() {
@@ -955,8 +1205,11 @@ function pickGame() {
 
   // --- empty-list case: show warning and install a click-to-clear handler ---
   if (games.length === 0) {
+	state.emptyPickAttempts++;
+	checkAchievements();
+	
 	result.textContent = "No games in list!";
-	result.classList.remove('fade-out'); // reset in case it's still faded
+	result.classList.remove('fade-out');
 
 	if (!pendingClearWarningHandler) {
 	  pendingClearWarningHandler = function handler(e) {
@@ -985,6 +1238,18 @@ function pickGame() {
   let candidates = [...selectedIndices].map(i => games[i]);
   if (candidates.length === 0) candidates = games;
 
+  state.totalPicks++;
+
+  // --- Check speed demon ---
+  const now = Date.now();
+  const elapsedSeconds = (now - appStartTime) / 1000;
+
+  if (!achievements.find(a => a.id === "speedDemon").unlocked && elapsedSeconds <= 3) {
+    state.speedDemonCount++;
+  }
+
+  checkAchievements();
+
   let counter = 0,
       previousLi = null;
 
@@ -1011,18 +1276,10 @@ function pickGame() {
         winnerLi.classList.add('warp', 'winner-glow');
         setTimeout(() => winnerLi.classList.remove('warp'), 500);
 
-        // ---- SAVE WINNER HISTORY ----
-        const now = new Date();
-        const timestamp = now.getFullYear() + "." +
-          String(now.getMonth() + 1).padStart(2, '0') + "." +
-          String(now.getDate()).padStart(2, '0') + " " +
-          String(now.getHours()).padStart(2, '0') + ":" +
-          String(now.getMinutes()).padStart(2, '0');
-        const entry = `${randomGame} - ${timestamp}`;
-        let history = JSON.parse(localStorage.getItem('winnersHistory')) || [];
-        history.unshift(entry);               // add newest first
-        history = history.slice(0, 10);        // keep only last 10
-        localStorage.setItem('winnersHistory', JSON.stringify(history));
+		// ---- SAVE WINNER HISTORY (count-only, per-list) ----
+		const counts = getWinnersCounts(currentList);
+		counts[randomGame] = (counts[randomGame] || 0) + 1;
+		saveWinnersCounts(counts, currentList);
       }
       pickBtn.disabled = false;
       pickBtn.textContent = "Pick a Game!";
@@ -1102,58 +1359,230 @@ function showModal(message, callback = null, confirmMode = false, placeholder = 
   document.body.appendChild(modal);
 }
 
-// ---------- Game History ----------
-	function showBurgerMenu() {
-	  const history = JSON.parse(localStorage.getItem('winnersHistory')) || [];
-	  let listHtml = "";
+// ---------- Winners history helpers (per-list, with migration) ----------
+function getAllWinnersHistory() {
+  const raw = localStorage.getItem('winnersHistory');
+  if (!raw) return {};
 
-	  if(history.length > 0){
-		listHtml = "<ul style='list-style:none; padding:0; margin:10px 0;'>";
-		history.forEach(entry=>{
-		  listHtml += `<li style="margin:4px 0; color:var(--text-light); font-size:14px; text-align:center;">${entry}</li>`;
-		});
-		listHtml += "</ul>";
-	  } else {
-		listHtml = `<div class="modal-chip-text">No winners yet.</div>`;
-	  }
+  try {
+    const parsed = JSON.parse(raw);
 
-	  const modalContent = `
-		<div class="custom-modal-content modal-glow">
-		  <div class="modal-chip-text"><strong>Winners History</strong></div>
-		  ${listHtml}
-		</div>
-	  `;
+    // If legacy array (["Game - timestamp", ...]) convert -> { currentList: { name: count } }
+    if (Array.isArray(parsed)) {
+      const counts = {};
+      parsed.forEach(entry => {
+        const name = (typeof entry === 'string') ? entry.split(' - ')[0].trim() : String(entry);
+        if (!name) return;
+        counts[name] = (counts[name] || 0) + 1;
+      });
+      const wrapped = {};
+      wrapped[currentList] = counts;
+      localStorage.setItem('winnersHistory', JSON.stringify(wrapped));
+      return wrapped;
+    }
 
-	  const modal = document.createElement('div');
-	  modal.className = 'custom-modal';
-	  modal.innerHTML = modalContent;
+    // If parsed is an object, detect whether it's old flat format (name -> number)
+    if (parsed && typeof parsed === 'object') {
+      const firstVal = parsed[Object.keys(parsed)[0]];
+      // If values are numbers -> old flat counts format, wrap under currentList
+      if (typeof firstVal === 'number') {
+        const wrapped = {};
+        wrapped[currentList] = parsed;
+        localStorage.setItem('winnersHistory', JSON.stringify(wrapped));
+        return wrapped;
+      }
 
-	  const closeBtn = document.createElement('button');
-	  closeBtn.textContent = 'Close';
-	  closeBtn.onclick = () => {
-		modal.classList.add('closing');
-		modal.querySelector('.custom-modal-content').classList.add('closing');
-		modal.querySelector('.custom-modal-content').addEventListener('animationend', () => {
-		  if(modal.parentNode) document.body.removeChild(modal);
-		}, { once:true });
-	  };
+      // Otherwise assume it's already per-list format { listName: { name: count, ... }, ... }
+      return parsed;
+    }
+  } catch (e) {
+    console.error('Failed to parse winnersHistory:', e);
+  }
 
-	  const clearBtn = document.createElement('button');
-	  clearBtn.textContent = 'Clear History';
-	  clearBtn.onclick = () => {
-		localStorage.removeItem('winnersHistory');
-		modal.classList.add('closing');
-		modal.querySelector('.custom-modal-content').classList.add('closing');
-		modal.querySelector('.custom-modal-content').addEventListener('animationend', () => {
-		  if(modal.parentNode) document.body.removeChild(modal);
-		}, { once:true });
-	  };
+  return {};
+}
 
-	  modal.querySelector('.custom-modal-content').appendChild(closeBtn);
-	  modal.querySelector('.custom-modal-content').appendChild(clearBtn);
+function getWinnersCounts(listName = currentList) {
+  const all = getAllWinnersHistory();
+  // return a shallow clone to avoid accidental mutation outside
+  return all[listName] ? Object.assign({}, all[listName]) : {};
+}
 
-	  document.body.appendChild(modal);
+function saveWinnersCounts(counts, listName = currentList) {
+  const all = getAllWinnersHistory();
+  all[listName] = counts || {};
+  localStorage.setItem('winnersHistory', JSON.stringify(all));
+}
+
+
+// ---------- Game History (counts) ----------
+function showBurgerMenu() {
+  const counts = getWinnersCounts(currentList);
+  const entries = Object.entries(counts || {});
+  let listHtml = "";
+
+  if (entries.length > 0) {
+    // sort by count desc, then take only top 10
+    entries.sort((a, b) => b[1] - a[1]);
+    const topEntries = entries.slice(0, 10);
+
+    listHtml = "<ul style='list-style:none; padding:0; margin:10px 0;'>";
+    topEntries.forEach(([name, count]) => {
+      listHtml += `
+        <li style="
+          display:block;
+          width:100%;
+          margin:6px 0;
+          padding:6px 0;
+          color:var(--text-light);
+          font-size:15px;
+          text-align:center;
+          border-bottom:1px solid rgba(255,255,255,0.15);
+          white-space:normal;
+          word-break:break-word;
+        ">
+          ${name} — ${count}
+        </li>`;
+    });
+    listHtml += "</ul>";
+  } else {
+    listHtml = `<div class="modal-chip-text">No winners yet for "${currentList}".</div>`;
+  }
+
+  const modalContent = `
+    <div class="custom-modal-content modal-glow">
+      <div class="modal-chip-text"><strong>Winners History (Top 10) — ${currentList}</strong></div>
+      ${listHtml}
+    </div>
+  `;
+
+  const modal = document.createElement('div');
+  modal.className = 'custom-modal';
+  modal.innerHTML = modalContent;
+
+  // ---- Buttons ----
+  const buttonContainer = document.createElement('div');
+  buttonContainer.style.display = 'flex';
+  buttonContainer.style.justifyContent = 'center';
+  buttonContainer.style.gap = '10px';
+  buttonContainer.style.marginTop = '15px';
+
+  // Chart button
+  const chartBtn = document.createElement('button');
+  chartBtn.textContent = 'Chart';
+  chartBtn.onclick = () => {
+    showWinnersChart(currentList); // define this separately
+  };
+
+  // Close button
+  const closeBtn = document.createElement('button');
+  closeBtn.textContent = 'Close';
+  closeBtn.onclick = () => {
+    modal.classList.add('closing');
+    modal.querySelector('.custom-modal-content').classList.add('closing');
+    modal.querySelector('.custom-modal-content').addEventListener('animationend', () => {
+      if (modal.parentNode) document.body.removeChild(modal);
+    }, { once: true });
+  };
+
+  // Clear button — clears ONLY the current list’s history
+  const clearBtn = document.createElement('button');
+  clearBtn.textContent = 'Clear History';
+  clearBtn.onclick = () => {
+    const all = getAllWinnersHistory() || {};
+    if (all[currentList]) {
+      delete all[currentList]; // remove only the currently selected list
+      localStorage.setItem('winnersHistory', JSON.stringify(all));
+    }
+    modal.classList.add('closing');
+    modal.querySelector('.custom-modal-content').classList.add('closing');
+    modal.querySelector('.custom-modal-content').addEventListener('animationend', () => {
+      if (modal.parentNode) document.body.removeChild(modal);
+    }, { once: true });
+  };
+
+  // append buttons
+  buttonContainer.appendChild(chartBtn);
+  buttonContainer.appendChild(closeBtn);
+  buttonContainer.appendChild(clearBtn);
+
+  modal.querySelector('.custom-modal-content').appendChild(buttonContainer);
+  document.body.appendChild(modal);
+}
+
+
+// ---------- WINNERS CHART ----------
+function showWinnersChart(listName) {
+  const counts = getWinnersCounts(listName) || {};
+  const entries = Object.entries(counts);
+
+	if (entries.length === 0) {
+	  showModal(`No data for "${listName}" yet!`);
+	  return;
 	}
+
+  // Sort descending by count
+  entries.sort((a, b) => b[1] - a[1]);
+  const maxCount = entries[0][1];
+
+  // Get theme's primary and secondary colors
+  const styles = getComputedStyle(document.body);
+  const primaryColor = styles.getPropertyValue('--primary').trim() || '#00f0ff';
+  const secondaryColor = styles.getPropertyValue('--secondary').trim() || '#007c91';
+
+  // Build sliders with gradient
+  const slidersHtml = entries.map(([name, count]) => {
+    const widthPercent = (count / maxCount) * 100; // relative width
+    return `
+      <div style="display:flex; align-items:center; margin:6px 0;">
+        <div style="width:150px; font-size:14px; text-align:left; padding-right:10px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;">
+          ${name}:
+        </div>
+        <div style="flex-grow:1; height:16px; background: rgba(255,255,255,0.1); border-radius:8px; overflow:hidden;">
+          <div style="
+            width:${widthPercent}%;
+            height:100%;
+            background: linear-gradient(145deg, ${primaryColor}, ${secondaryColor});
+            border-radius:8px;
+            transition: width 0.3s ease;
+          "></div>
+        </div>
+        <div style="width:40px; text-align:right; font-size:14px; padding-left:8px;">
+          ${count}
+        </div>
+      </div>
+    `;
+  }).join('');
+
+  const modalContent = `
+    <div class="custom-modal-content modal-glow" style="width:400px; max-width:90vw;">
+      <div class="modal-chip-text" style="margin-bottom:10px;"><strong>Stats — ${listName}</strong></div>
+      ${slidersHtml}
+    </div>
+  `;
+
+  const modal = document.createElement('div');
+  modal.className = 'custom-modal';
+  modal.innerHTML = modalContent;
+  modal.style.userSelect = "none";
+
+	// Close button
+	const closeBtn = document.createElement('button');
+	closeBtn.textContent = 'Close';
+	closeBtn.style.marginTop = '12px';
+	closeBtn.style.padding = '6px 12px';  // smaller padding
+	closeBtn.style.width = 'auto';        // don't stretch full width
+	closeBtn.onclick = () => {
+	  modal.classList.add('closing');
+	  modal.querySelector('.custom-modal-content').classList.add('closing');
+	  modal.querySelector('.custom-modal-content').addEventListener('animationend', () => {
+		if (modal.parentNode) document.body.removeChild(modal);
+	  }, { once: true });
+	};
+
+  modal.querySelector('.custom-modal-content').appendChild(closeBtn);
+  document.body.appendChild(modal);
+}
 
 // ---------- Create/Delete List ----------
 function createList() {
@@ -1173,6 +1602,9 @@ function createList() {
         renderDropdown();
         renderGames();
 		localStorage.setItem('activeList', currentList);
+		
+		state.listCount++;
+        checkAchievements();
       }
     },
     false,
@@ -1191,13 +1623,26 @@ function deleteList() {
     `Delete list "${currentList}"?`,
     (confirm) => {
       if (confirm) {
-        delete allLists[currentList];
-        currentList = Object.keys(allLists)[0];
-        saveLists();
-        renderDropdown();
-        renderGames();
-		localStorage.setItem('activeList', currentList);
-      }
+		  // Remove list data
+		  delete allLists[currentList];
+
+		  // Remove winners history for that list (if present)
+		  const all = getAllWinnersHistory();
+		  if (all && all[currentList]) {
+			delete all[currentList];
+			localStorage.setItem('winnersHistory', JSON.stringify(all));
+		  }
+
+		  currentList = Object.keys(allLists)[0];
+		  saveLists();
+		  renderDropdown();
+		  renderGames();
+		  localStorage.setItem('activeList', currentList);
+		  
+		  state.listdelCount++;
+		  state.listCount = Math.max(0, state.listCount - 1);
+          checkAchievements();
+		}
     },
     true
   );
@@ -1213,10 +1658,10 @@ function showAboutModal() {
       <div class="modal-chip-text">by Szappanos Gábor</div>
     </div>
   `;
-
   const modal = document.createElement('div');
   modal.className = 'custom-modal';
   modal.innerHTML = modalContent;
+  modal.style.userSelect = "none";
 
   const okBtn = document.createElement('button');
   okBtn.textContent = 'OK';
@@ -1233,6 +1678,9 @@ function showAboutModal() {
 
   modal.querySelector('.custom-modal-content').appendChild(okBtn);
   document.body.appendChild(modal);
+  
+  state.openAboutCount++;
+  checkAchievements();
 }
 
 // ---------- Import from BGG (All Owned optional, only OWN games) ----------
@@ -1334,7 +1782,6 @@ async function importBGG() {
           showModal(`No games found for user "${username}".`);
           return;
         }
-
         const newListName = `${username}'s BGG Games`;
         allLists[newListName] = games;
         currentList = newListName;
@@ -1343,6 +1790,9 @@ async function importBGG() {
         renderGames();
 
         showModal(`Imported ${games.length} games from "${username}".`);
+		
+		state.bggCount++;
+    	checkAchievements();
 
       } catch (err) {
         console.error(err);
@@ -1386,19 +1836,7 @@ setTimeout(() => {
     }
   }
 }, 0);
-
-
-
-
-
-
-
-
-
 }
-
-
-
 
 // ---------- File Save/Load ----------
 function saveToFile() {
@@ -1416,6 +1854,9 @@ function saveToFile() {
   link.href = URL.createObjectURL(blob);
   link.click();
   URL.revokeObjectURL(link.href);
+  
+  state.saveToFileCount++;
+  checkAchievements();
 }
 
 function loadFromFile() {
